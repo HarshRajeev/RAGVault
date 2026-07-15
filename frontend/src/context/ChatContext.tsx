@@ -36,6 +36,7 @@ interface ChatContextValue {
   setError: Dispatch<SetStateAction<string>>;
   selectSession: (sessionId: string) => Promise<void>;
   createSession: () => Promise<ChatSession>;
+  renameSession: (sessionId: string, title: string) => Promise<void>;
   deleteSession: (sessionId: string) => Promise<void>;
   uploadDocument: (file: File) => Promise<DocumentIngestResponse>;
   deleteDocument: (documentName: string) => Promise<void>;
@@ -202,6 +203,34 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     [activeSessionId, loadMessages, sessions],
   );
 
+  const renameSession = useCallback(async (sessionId: string, title: string) => {
+    const trimmed = title.trim();
+    if (!trimmed) {
+      setError('Chat title cannot be blank.');
+      return;
+    }
+
+    let previousSessions: ChatSession[] = [];
+    setError('');
+    setSessions((current) => {
+      previousSessions = current;
+      return current.map((session) =>
+        session.id === sessionId ? { ...session, title: trimmed } : session,
+      );
+    });
+
+    try {
+      const updated = await api.renameChat(sessionId, trimmed);
+      setSessions((current) =>
+        current.map((session) => (session.id === sessionId ? updated : session)),
+      );
+    } catch (err) {
+      setSessions(previousSessions);
+      setError(err instanceof Error ? err.message : 'Could not rename chat.');
+      throw err;
+    }
+  }, []);
+
   const uploadDocument = useCallback(
     async (file: File): Promise<DocumentIngestResponse> => {
       setIsUploading(true);
@@ -214,13 +243,13 @@ export function ChatProvider({ children }: { children: ReactNode }) {
           }
         });
         await refreshDocuments();
-      setUploadProgress(100);
-      return result;
-    } catch (err) {
-      throw err;
-    } finally {
-      setIsUploading(false);
-    }
+        setUploadProgress(100);
+        return result;
+      } catch (err) {
+        throw err;
+      } finally {
+        setIsUploading(false);
+      }
     },
     [refreshDocuments],
   );
@@ -323,6 +352,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       setError,
       selectSession,
       createSession,
+      renameSession,
       deleteSession,
       uploadDocument,
       deleteDocument,
@@ -345,6 +375,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
       isUploading,
       messages,
       rateMessage,
+      renameSession,
       refreshDocuments,
       refreshSessions,
       selectSession,

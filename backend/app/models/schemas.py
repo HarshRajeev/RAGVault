@@ -35,6 +35,18 @@ class ChatSessionCreate(BaseModel):
         return value or "New chat"
 
 
+class ChatSessionUpdate(BaseModel):
+    title: str = Field(min_length=1, max_length=120)
+
+    @field_validator("title")
+    @classmethod
+    def normalize_title(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("Title cannot be blank.")
+        return value
+
+
 class ChatSessionRead(BaseModel):
     id: UUID
     user_id: UUID

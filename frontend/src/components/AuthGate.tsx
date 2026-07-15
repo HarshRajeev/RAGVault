@@ -42,7 +42,7 @@ export function AuthGate() {
         <div className="rounded border border-ink/10 bg-white p-6 shadow-toolbar">
           <div className="mb-6">
             <p className="text-sm font-medium uppercase tracking-[0.18em] text-moss">
-              Document Q&A
+              RAG Vault
             </p>
             <h1 className="mt-2 text-2xl font-semibold">Sign in</h1>
           </div>
@@ -75,7 +75,7 @@ export function AuthGate() {
           <form className="space-y-4" onSubmit={handleSubmit}>
             <label className="block">
               <span className="mb-1 block text-sm font-medium text-ink/75">Email</span>
-              <span className="flex h-11 items-center rounded border border-ink/20 bg-white px-3 focus-within:border-spruce">
+              <span className="flex h-11 items-center rounded border border-ink/20 bg-white px-3 transition focus-within:border-spruce focus-within:ring-2 focus-within:ring-spruce/15">
                 <Mail className="h-4 w-4 text-ink/40" aria-hidden="true" />
                 <input
                   className="ml-2 h-full min-w-0 flex-1 border-0 bg-transparent text-sm outline-none"
@@ -90,7 +90,7 @@ export function AuthGate() {
 
             <label className="block">
               <span className="mb-1 block text-sm font-medium text-ink/75">Password</span>
-              <span className="flex h-11 items-center rounded border border-ink/20 bg-white px-3 focus-within:border-spruce">
+              <span className="flex h-11 items-center rounded border border-ink/20 bg-white px-3 transition focus-within:border-spruce focus-within:ring-2 focus-within:ring-spruce/15">
                 <Lock className="h-4 w-4 text-ink/40" aria-hidden="true" />
                 <input
                   className="ml-2 h-full min-w-0 flex-1 border-0 bg-transparent text-sm outline-none"

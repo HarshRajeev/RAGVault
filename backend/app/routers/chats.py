@@ -6,7 +6,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.core.security import AuthenticatedUser, get_current_user
-from app.models.schemas import AskRequest, AskResponse, ChatSessionCreate, ChatSessionRead, MessageRead
+from app.models.schemas import (
+    AskRequest,
+    AskResponse,
+    ChatSessionCreate,
+    ChatSessionRead,
+    ChatSessionUpdate,
+    MessageRead,
+)
 from app.models.tables import ChatSession, Message
 from app.services.rag import answer_question, ensure_session_owner
 
@@ -48,6 +55,20 @@ async def list_messages(
         select(Message).where(Message.session_id == session_id).order_by(Message.created_at.asc())
     )
     return [MessageRead.model_validate(message) for message in messages.all()]
+
+
+@router.patch("/{session_id}", response_model=ChatSessionRead)
+async def rename_chat_session(
+    session_id: UUID,
+    payload: ChatSessionUpdate,
+    user: AuthenticatedUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> ChatSessionRead:
+    session = await ensure_session_owner(db=db, user_id=user.id, session_id=session_id)
+    session.title = payload.title
+    await db.commit()
+    await db.refresh(session)
+    return ChatSessionRead.model_validate(session)
 
 
 @router.post("/{session_id}/ask", response_model=AskResponse)

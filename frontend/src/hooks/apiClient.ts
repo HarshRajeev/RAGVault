@@ -40,7 +40,7 @@ apiClient.interceptors.response.use(
       if (!error.response) {
         return Promise.reject(
           new Error(
-            `Could not reach the backend at ${appConfig.apiBaseUrl}. Make sure FastAPI is running on port 8000, then refresh this page.`,
+            `Could not reach the backend at ${appConfig.apiBaseUrl}. The API may be waking up, temporarily unavailable, or blocked by CORS. Please refresh and try again.`,
           ),
         );
       }
@@ -93,6 +93,11 @@ export const api = {
 
   async createChat(title: string): Promise<ChatSession> {
     const { data } = await apiClient.post<ChatSession>('/chats', { title });
+    return data;
+  },
+
+  async renameChat(sessionId: string, title: string): Promise<ChatSession> {
+    const { data } = await apiClient.patch<ChatSession>(`/chats/${sessionId}`, { title });
     return data;
   },
 

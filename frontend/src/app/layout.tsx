@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Document Q&A',
+  title: 'RAG Vault',
   description: 'A secure multi-tenant RAG document question answering workspace.',
 };
 
